@@ -20,3 +20,5 @@ public class StockState extends Stock {
         this.value = value;
     }
 }
+
+change;
