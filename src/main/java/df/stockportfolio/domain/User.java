@@ -1,45 +1,43 @@
 
 package df.stockportfolio.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.*;
 
-@Document
+@Document(collection = "Users")
 public class User {
 
 //    private static AtomicLong gen = new AtomicLong();
 
     @Id
     private String id;
-    private List<StockUser> stocks;
+    private Map<String,Integer> stocks;
 
-    public User( List<StockUser> stocks) {
+    public User() {
+        this.stocks = new HashMap<>();
+    }
+
+    public User(Map<String,Integer> stocks) {
         this.stocks = stocks;
     }
 
-    public List getStocks() {
+    public String getId() {
+        return id;
+    }
+
+    public Map getStocks() {
         return stocks;
     }
 
-    public void setStocks(List<StockUser> stocks) {
+    public void setStocks(Map<String,Integer> stocks) {
         this.stocks = stocks;
     }
 
-    public void updateQnt(List<StockUser> upList){
-        Collections.sort(upList);
-        Collections.sort(this.stocks);
-        Iterator iter = this.stocks.iterator();
-        StockUser curr;
-        for (StockUser stock:upList) {
-            while (iter.hasNext()){
-                curr = (StockUser) iter.next();
-                if ()
-            }
-            stock.getQuantity()
-        }
-
+    @Override
+    public String toString() {
+        return super.toString()+id+" : "+stocks.toString();
     }
-
 }

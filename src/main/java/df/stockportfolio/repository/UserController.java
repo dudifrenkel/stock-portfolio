@@ -1,37 +1,74 @@
 package df.stockportfolio.repository;
 
-import df.stockportfolio.domain.StockUser;
 import df.stockportfolio.domain.User;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
+    public static final String UNKNOWN_ID_MSG = "Error: Unknown ID";
     private UserRepository userRepository;
 
-    public void insert(@RequestBody User user){
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/all")
+    public List<User> getAll() {
+        return this.userRepository.findAll();
+    }
+
+
+    @PutMapping
+    public String insert(@RequestBody User user){
+        this.userRepository.insert(user);
+        return user.getId();
+    }
+
+    @PostMapping
+    public void update(@RequestBody User user){
         this.userRepository.save(user);
     }
 
-    public void update(@RequestBody String id, List<StockUser> stocks){
+    @PostMapping("/update-values/{id}")
+    public String updateValues(@PathVariable ("id") String id,@RequestBody HashMap<String,Integer> chValues) {
         Optional<User> user = this.userRepository.findById(id);
-        if (user!=null){
-            List<StockUser> org = user.get().getStocks();
-            Collections.sort(org);
-            Collections.sort(stocks);
-            for (StockUser stock:org){
-
-
+        if ((Object)user != Optional.empty()) {
+            User upUser = user.get();
+            Set<Map.Entry<String, Integer>> chValSet = chValues.entrySet();
+            Map<String, Integer> org = user.get().getStocks();
+            for (Map.Entry<String, Integer> stock : chValSet) {
+                if (org.containsKey(stock.getKey())) {
+                    org.computeIfPresent(stock.getKey(), ((k, v) -> v + stock.getValue()));
+                }
             }
+            this.userRepository.save(upUser);
+            return id;
         }
-        user.setStocks(stocks);
+        return UNKNOWN_ID_MSG;
     }
+
+    @GetMapping("/{id}")
+    public User getById(@PathVariable("id") String id){
+        Optional<User> user = this.userRepository.findById(id);
+        return user.get();
+    }
+
+//    public void update1(@RequestBody String id, Map<String,Integer> upStocks){
+//        Optional<User> user = this.userRepository.findById(id);
+//        if (user!=null){
+//            Set<Map.Entry<String,Integer>> upSet = upStocks.entrySet();
+//            Map<String,Integer> org = user.get().getStocks();
+//            for (Map.Entry<String,Integer> stock:upSet){
+//                if (org.containsKey(stock.getKey())){
+//                    org.computeIfPresent(stock.getKey(),((k,v)-> v + stock.getValue()));
+//                }
+//            }
+//        }
+//        this.userRepository.save(user.get());
+//    }
 
 }

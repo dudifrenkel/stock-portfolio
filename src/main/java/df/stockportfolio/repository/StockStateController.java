@@ -1,9 +1,7 @@
 package df.stockportfolio.repository;
 
 import df.stockportfolio.domain.StockState;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +18,16 @@ public class StockStateController {
     @GetMapping("/all")
     public List<StockState> getAll() {
         return this.stockStateRepository.findAll();
+    }
+
+    @PutMapping
+    public StockState insert (@RequestBody StockState stock){
+        this.stockStateRepository.insert(stock);
+        return stock;
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete (@PathVariable("id") String id){
+        stockStateRepository.deleteById(id);
     }
 }
