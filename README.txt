@@ -35,3 +35,14 @@ POST http://localhost:8080/users
 			...
         }
     }
+
+update an existing client with values change -
+POST http://localhost:8080/users/update-values/{id}
+{
+            "{FIRST_STOCK_NAME}": {FIRST_STOCK_CHANGE},
+			"{SECOND_STOCK_NAME}": {SECOND_STOCK_CHANGE},
+			...
+        }
+
+Check current portfolio value -
+GET http://localhost:8080/users/portfolio-value/{id}
