@@ -1,42 +1,68 @@
 package df.stockportfolio.repository;
 
+import df.stockportfolio.domain.StockState;
 import df.stockportfolio.domain.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/")
 public class UserController {
 
     public static final String UNKNOWN_ID_MSG = "Error: Unknown ID";
-    private UserRepository userRepository;
+    public static final String TOTAL_VAL_MSG = "Your portfolio total value is: ";
 
-    public UserController(UserRepository userRepository) {
+    private UserRepository userRepository;
+    private StockStateRepository stockStateRepository;
+
+//    public UserController(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+
+    public UserController(UserRepository userRepository, StockStateRepository stockStateRepository) {
         this.userRepository = userRepository;
+        this.stockStateRepository = stockStateRepository;
     }
 
-    @GetMapping("/all")
-    public List<User> getAll() {
+
+    @GetMapping("/stock-state/all")
+    public List<StockState> getAllState() {
+        return this.stockStateRepository.findAll();
+    }
+
+    @PutMapping("/stock-state")
+    public StockState insert (@RequestBody StockState stock){
+        this.stockStateRepository.insert(stock);
+        return stock;
+    }
+
+    @GetMapping("/users/all")
+    public List<User> getAllUsers() {
         return this.userRepository.findAll();
     }
 
 
-    @PutMapping
+    @PutMapping("/users")
     public String insert(@RequestBody User user){
         this.userRepository.insert(user);
         return user.getId();
     }
 
-    @PostMapping
-    public void update(@RequestBody User user){
-        this.userRepository.save(user);
+    @PostMapping("/users")
+    public String update(@RequestBody User user){
+        Optional<User> opUser = this.userRepository.findById(user.getId());
+        if (opUser.isPresent()){
+            this.userRepository.save(user);
+        }
+        return UNKNOWN_ID_MSG;
+
     }
 
-    @PostMapping("/update-values/{id}")
+    @PostMapping("/users/update-values/{id}")
     public String updateValues(@PathVariable ("id") String id,@RequestBody HashMap<String,Integer> chValues) {
         Optional<User> user = this.userRepository.findById(id);
-        if ((Object)user != Optional.empty()) {
+        if (user.isPresent()){
             User upUser = user.get();
             Set<Map.Entry<String, Integer>> chValSet = chValues.entrySet();
             Map<String, Integer> org = user.get().getStocks();
@@ -51,24 +77,22 @@ public class UserController {
         return UNKNOWN_ID_MSG;
     }
 
-    @GetMapping("/{id}")
-    public User getById(@PathVariable("id") String id){
+    @GetMapping("/users/portfolio-value/{id}")
+    public String getById(@PathVariable("id") String id){
         Optional<User> user = this.userRepository.findById(id);
-        return user.get();
-    }
+        if (user.isPresent()) {
+            int portVal = 0;
+            List<StockState> stockStateList = this.stockStateRepository.findAll();
+            Map<String,Integer> userStocks = user.get().getStocks();
+            for (StockState stockstate:stockStateList) {
+                if (userStocks.containsKey(stockstate.getName())){
+                    portVal += userStocks.get(stockstate.getName())*stockstate.getValue();
+                }
+            }
+            return (TOTAL_VAL_MSG +Integer.toString(portVal));
+        }
 
-//    public void update1(@RequestBody String id, Map<String,Integer> upStocks){
-//        Optional<User> user = this.userRepository.findById(id);
-//        if (user!=null){
-//            Set<Map.Entry<String,Integer>> upSet = upStocks.entrySet();
-//            Map<String,Integer> org = user.get().getStocks();
-//            for (Map.Entry<String,Integer> stock:upSet){
-//                if (org.containsKey(stock.getKey())){
-//                    org.computeIfPresent(stock.getKey(),((k,v)-> v + stock.getValue()));
-//                }
-//            }
-//        }
-//        this.userRepository.save(user.get());
-//    }
+        return UNKNOWN_ID_MSG;
+    }
 
 }
