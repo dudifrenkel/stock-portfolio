@@ -20,9 +20,6 @@ public class Controller {
     private UserRepository userRepository;
     private StockStateRepository stockStateRepository;
 
-//    public UserController(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
 
     public Controller(UserRepository userRepository, StockStateRepository stockStateRepository) {
         this.userRepository = userRepository;
@@ -98,6 +95,7 @@ public class Controller {
         return UNKNOWN_ID_MSG;
     }
 
+    // TO-DO
     @GetMapping("/users/portfolio-value/{id}/{strategy}")
     public String getRec(@PathVariable("id") String id, @PathVariable("strategy") String strategy) {
         Optional<User> user = this.userRepository.findById(id);

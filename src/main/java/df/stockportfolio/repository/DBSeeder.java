@@ -18,6 +18,7 @@ import java.util.Map;
 @Component
 public class DBSeeder implements CommandLineRunner{
 
+    public static final String URL = "http://www.oracle.com/";
     private StockStateRepository stockStateRepository;
     private UserRepository userRepository;
 
@@ -26,13 +27,6 @@ public class DBSeeder implements CommandLineRunner{
     private static final int STOCK_NAME_PL = 0;
     private static final int VAL_PL = 1;
 
-//    public DBSeeder(StockStateRepository stockStateRepository) {
-//        this.stockStateRepository = stockStateRepository;
-//    }
-
-//    public DBSeeder(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
     public DBSeeder(StockStateRepository stockStateRepository, UserRepository userRepository) {
         this.stockStateRepository = stockStateRepository;
         this.userRepository = userRepository;
@@ -63,27 +57,13 @@ public class DBSeeder implements CommandLineRunner{
             e.printStackTrace();
         }
 
-        Map<String,Integer> umap = new HashMap<>();
-        Map<String,Integer> umap1 = new HashMap<>();
-        umap.put(stockStateList.get(0).getName(),5);
-        umap.put(stockStateList.get(3).getName(),24);
-        User us = new User(umap);
-        umap1.put(stockStateList.get(50).getName(),1200);
-        umap1.put(stockStateList.get(8).getName(),50);
-        umap1.put(stockStateList.get(15).getName(),2);
-        User us1 = new User(umap1);
-        this.userRepository.deleteAll();
-        this.userRepository.save(us);
-        this.userRepository.save(us1);
-
-        URL oracle = new URL("http://www.oracle.com/");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(oracle.openStream()));
-
-        String inputLine;
-        while ((inputLine = in.readLine()) != null)
-            System.out.println(inputLine);
-        in.close();
-
+//        URL oracle = new URL(URL);
+//        BufferedReader in = new BufferedReader(
+//                new InputStreamReader(oracle.openStream()));
+//
+//        String inputLine;
+//        while ((inputLine = in.readLine()) != null)
+//            System.out.println(inputLine);
+//        in.close();
     }
 }
